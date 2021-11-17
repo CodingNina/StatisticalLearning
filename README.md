@@ -1,5 +1,5 @@
 # Supervised and Unsupervised Machine Learning applied to Titanic case
-The aim of the project is about predicting survivals among Titanic passengers, and showing how using different predictive models and having PCA, improves the performance. 
+The aim of this project is about estimating whether Titanic passengers would survive based on demographic, socioeconomic, and familial characteristics and showing how using different predictive models and having PCA, improves the performance. 
 
 # About the dataset
 The dataset has been taken from Kaggle, from GettingStarted Prediction Competition. The data is made of three main files: training set (train.csv) and test set (test.csv). 
