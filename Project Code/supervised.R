@@ -1,17 +1,17 @@
-# loading Dataset
+#loading Dataset
 train <- read.csv("train.csv", stringsAsFactors = F, na.strings = c("NA", ""))
 test <- read.csv("test.csv", stringsAsFactors = F, na.strings = c("NA", ""))
 
-# data structure
+#data structure
 str(train)
 str(test)
 
-# summary
+#summary
 summary(train[, c(3,6,10)])
 summary(as.factor(train$Sex))
 summary(as.factor(train$Embarked))
 
-# missing data analysis
+#missing data analysis
 train_test <- train
 test_test <- test
 train_test$Set <- "train"
@@ -20,12 +20,12 @@ test_test$Survived <- NA
 all_data <- rbind(train_test, test_test)
 sapply(all_data, function (x) {sum(is.na(x))})
 
-# exploratory Data analysis
+#exploratory data analysis
 counts_Sex <- table(train$Survived, train$Sex)
 barplot(counts_Sex, main="Number of Survivors by Sex", xlab="Sex", ylab="Number of Passengers", beside=TRUE, col=c("blue", "green"), names.arg=c("Female", "Male"), cex.names=0.9, cex.axis=0.9, ylim=c(0, 500), axis.lty=1)
 legend("topleft", legend=c("Died", "Survived"), fill=c("blue", "green"), cex=0.8, box.lty=0)
 
-## analysis of survival by class
+#analysis of survival by class
 prop.table(table(all_data$Pclass))
 prop.table(table(train$Pclass, train$Survived), 1)
 
@@ -36,7 +36,7 @@ legend("topleft", legend=c("Died", "Survived"), fill=c("blue", "green"), cex=0.8
 
 
 
-## Decision Tree
+#Decision Tree
 
 library(rpart)
 library(rpart.plot)
@@ -48,19 +48,20 @@ tree <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked,
 
 rpart.plot(tree)
 
-# Use this tree to predict the outcome of the test data
+#use this tree to predict the outcome of the test data
 my_prediction <- predict(tree, test, type="class")
 
 actual_values <- read.csv("gender_submission.csv")
 test$Survived <- actual_values$Survived
 confusionMatrix(table(test$Survived, my_prediction))
-# roc curve
+
+#roc curve
 PRROC_obj <- roc.curve(scores.class0 = my_prediction, weights.class0=test$Survived ,
                        curve=TRUE)
 plot(PRROC_obj)
 
 
-## Random Forest
+#Random Forest
 library(randomForest)
 
 set.seed(123)
@@ -71,8 +72,8 @@ rand_forest <- randomForest(factor(Survived)~Age + Fare + Sex+ Pclass+Parch+SibS
 
 rand_forest
 
-## getting important features
-# Get importance
+#getting important features
+#Get importance
 varImpPlot(rand_forest)
 
 
@@ -81,15 +82,15 @@ pred_rf_valid[is.na(pred_rf_valid)] <- 0
 
 confusionMatrix(table(test$Survived, pred_rf_valid))
 
-# roc curve
+#roc curve
 PRROC_obj <- roc.curve(scores.class0 = pred_rf_valid, weights.class0=test$Survived ,
                        curve=TRUE)
 plot(PRROC_obj)
 
 
-## ANN
+#ANN
 
-##Using neural networks 
+#Using neural networks 
 library(nnet)
 equation<-"Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked"
 survival<-as.formula(equation)
@@ -97,18 +98,18 @@ nnet.fit <- nnet(formula=survival, data=train_rand, size=2)
 
 Survived <- predict(nnet.fit, newdata=test)
 
-##Model Summary
+#Model Summary
 summary(nnet.fit)
 library(gamlss.add)
 plot(nnet.fit, struct = nnet.fit$n)
 
-# predictions 
+#predictions 
 Survived <- ifelse(Survived>0.5, 1,0)
 Survived[is.na(Survived)] <- 0
 
 confusionMatrix(table(test$Survived, Survived))
 
-# roc curve
+#roc curve
 PRROC_obj <- roc.curve(scores.class0 = Survived, weights.class0=test$Survived ,
                        curve=TRUE)
 plot(PRROC_obj)
