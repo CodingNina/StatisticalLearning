@@ -8,6 +8,7 @@ test  <- read.csv("test.csv",na.strings=c('NA',''), stringsAsFactors=F)
 head(train_set)
 
 mytrain_set <- train_set
+
 #Extract Cabin Num from Cabin.
 mytrain_set$CabinNum <- sapply(mytrain_set$Cabin,function(x) strsplit(x,'[A-Z]')[[1]][2])
 mytrain_set$CabinNum <- as.numeric(mytrain_set$CabinNum)
